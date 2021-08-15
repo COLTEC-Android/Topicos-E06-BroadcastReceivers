@@ -2,14 +2,25 @@ package br.ufmg.coltec.topicos_e06_broadcastreceivers;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.util.Log;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
     private static int CURRENT_THEME = R.style.Theme_TopicosE06BroadcastReceivers;
 
-    // TODO: Criar os receivers para tratar a mudança do tema
+    private BroadcastReceiver batteryReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d("BATTERY_RECEIVER", "bateria fraca!");
+            Toast.makeText(context, "Bateria fraca!", Toast.LENGTH_LONG).show();
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,14 +28,14 @@ public class MainActivity extends AppCompatActivity {
         this.setTheme(CURRENT_THEME);
         setContentView(R.layout.activity_main);
 
-        // TODO: registrar os receivers
+        IntentFilter filter = new IntentFilter(Intent.ACTION_BATTERY_LOW);
+        this.registerReceiver(this.batteryReceiver, filter);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
-        // TODO: desregistrar os receivers
+        unregisterReceiver(this.batteryReceiver);
     }
 
     /**
