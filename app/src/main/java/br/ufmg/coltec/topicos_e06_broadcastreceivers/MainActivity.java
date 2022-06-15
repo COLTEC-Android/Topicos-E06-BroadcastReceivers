@@ -2,14 +2,31 @@ package br.ufmg.coltec.topicos_e06_broadcastreceivers;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
     private static int CURRENT_THEME = R.style.Theme_TopicosE06BroadcastReceivers;
 
-    // TODO: Criar os receivers para tratar a mudança do tema
+    private BroadcastReceiver lowBatteryReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            switchActivityTheme(R.style.Theme_TopicosE06BroadcastReceiversLowBattery);
+            Toast.makeText(MainActivity.this, "Bateria fraca", Toast.LENGTH_LONG).show();
+        }
+    };
+
+    private BroadcastReceiver okBatteryReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            switchActivityTheme(R.style.Theme_TopicosE06BroadcastReceivers);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,14 +34,19 @@ public class MainActivity extends AppCompatActivity {
         this.setTheme(CURRENT_THEME);
         setContentView(R.layout.activity_main);
 
-        // TODO: registrar os receivers
+        IntentFilter batteryFilter = new IntentFilter(Intent.ACTION_BATTERY_LOW);
+        this.registerReceiver(this.lowBatteryReceiver, batteryFilter);
+
+        IntentFilter okFilter = new IntentFilter(Intent.ACTION_BATTERY_OKAY);
+        this.registerReceiver(this.okBatteryReceiver, okFilter);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
 
-        // TODO: desregistrar os receivers
+        this.unregisterReceiver(this.lowBatteryReceiver);
+        this.unregisterReceiver(this.okBatteryReceiver);
     }
 
     /**
